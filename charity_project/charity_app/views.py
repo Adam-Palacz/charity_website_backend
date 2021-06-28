@@ -1,11 +1,10 @@
-import requests
 from django.shortcuts import render, redirect
 from django.views import View
 from django.core.paginator import Paginator
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from .models import Category, Donation, Institution
+from .models import Category, Donation, Institution, CustomUser
+from .forms import DonationForm
+
 
 
 class LandingPageView(View):
@@ -50,12 +49,23 @@ class LogoutView(View):
 
 class AddDonationView(View):
     def get(self, request):
+        form = DonationForm()
         user = request.user
         if not user.is_authenticated:
             return redirect("/login")
         categories = Category.objects.all()
         institutions = Institution.objects.all()
-        return render(request, "form.html", context={"categories": categories, "institutions": institutions})
+        return render(request, "form.html", context={"categories": categories, "institutions": institutions, form:"form"})
+
+    def post(self, request):
+        form = DonationForm(request.POST)
+        user = request.user
+        breakpoint()
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = user
+            instance.save()
+            return render(request, 'form-confirmation.html')
 
 
 class LoginView(View):
@@ -63,9 +73,9 @@ class LoginView(View):
         return render(request, "login.html")
 
     def post(self, request):
-        username = request.POST.get("email")
+        email = request.POST.get("email")
         password = request.POST.get("password")
-        user = authenticate(username=username, password=password)
+        user = authenticate(email=email, password=password)
         if user is not None:
             login(request, user)
             return render(request, "index.html")
@@ -86,7 +96,7 @@ class RegisterView(View):
         if password != password2:
             return render(request, "register.html")
         else:
-            user = User.objects.create_user(username=email, password=password, email=email)
+            user = CustomUser.objects.create_user(email=email, password=password)
             user.first_name = name
             user.last_name = surname
             user.save()
@@ -96,3 +106,8 @@ class RegisterView(View):
 class ProfileView(View):
     def get(self, request):
         return render(request, "user_profile.html")
+
+
+class FormConfirmationView(View):
+    def get(self, request):
+        return render(request, 'form-confirmation.html')
