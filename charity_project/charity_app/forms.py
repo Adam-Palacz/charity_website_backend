@@ -4,8 +4,8 @@ from .models import Category, Institution
 
 class DonationForm(forms.Form):
     quantity = forms.IntegerField()
-    categories = forms.ModelMultipleChoiceField(queryset=Category.objects.all())
-    institution = forms.ModelChoiceField(queryset=Institution.objects.all())
+    # categories = forms.ModelMultipleChoiceField(queryset=Category.objects.all())
+    # institution = forms.ModelChoiceField(queryset=Institution.objects.all())
     address = forms.CharField(max_length=255)
     phone_number = forms.CharField(max_length=9)
     city = forms.CharField(max_length=255)

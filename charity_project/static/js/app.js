@@ -235,10 +235,9 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$step.parentElement.hidden = this.currentStep >= 6;
 
       // TODO: get data from inputs and show them in summary
-
-      this.$categories = document.querySelector('input[name="categories"]').value;
+      this.$categories = document.querySelectorAll('input[name="categories"]:checked')[0].value;
       this.$quantity = document.querySelector('input[name="quantity"]').value;
-      this.$institution = document.querySelector('input[name="institution"]').value;
+      this.$institution = document.querySelector('input[name="institution"]:checked').value;
       this.$address = document.querySelector('input[name="address"]').value;
       this.$city = document.querySelector('input[name="city"]').value;
       this.$zip_code = document.querySelector('input[name="zip_code"]').value;
@@ -294,6 +293,7 @@ document.addEventListener("DOMContentLoaded", function() {
 //    .then(response => response.json())
     .then(result => {
         console.log('Success:', result)
+        window.location.href = "http://127.0.0.1:8000/form/confirmation/";
     })
     .catch(error => {
         console.log('Error:', error);

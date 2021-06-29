@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout
-from .models import Category, Donation, Institution, CustomUser
+from .models import Category, Donation, Institution, CustomUser, DonationModelForm
 from .forms import DonationForm
 
 
@@ -49,7 +49,7 @@ class LogoutView(View):
 
 class AddDonationView(View):
     def get(self, request):
-        form = DonationForm()
+        form = DonationModelForm()
         user = request.user
         if not user.is_authenticated:
             return redirect("/login")
@@ -58,12 +58,16 @@ class AddDonationView(View):
         return render(request, "form.html", context={"categories": categories, "institutions": institutions, form:"form"})
 
     def post(self, request):
-        form = DonationForm(request.POST)
+        form = DonationModelForm(request.POST)
+        categories = Category.objects.get(name=request.POST['categories'])
+        institution = Institution.objects.get(pk=request.POST['institution'])
         user = request.user
-        breakpoint()
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = user
+            instance.save()
+            instance.categories.add(categories)
+            instance.institution = institution
             instance.save()
             return render(request, 'form-confirmation.html')
 

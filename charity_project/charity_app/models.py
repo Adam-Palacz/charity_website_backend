@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.base_user import BaseUserManager
+from django.forms import ModelForm
 
 
 class CustomUserManager(BaseUserManager):
@@ -69,14 +70,14 @@ class Institution(models.Model):
     type = models.IntegerField(choices=TYPE_CHOICES, default=4)
     categories = models.ManyToManyField(Category)
 
-    def __str__(self):
-        return f"Nazwa instytucji: {self.name}, opis: {self.description}"
+    # def __str__(self):
+    #     return f"Nazwa instytucji: {self.name}, opis: {self.description}"
 
 
 class Donation(models.Model):
     quantity = models.IntegerField()
     categories = models.ManyToManyField(Category)
-    institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, null=True)
     address = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=9)
     city = models.CharField(max_length=255)
@@ -85,3 +86,8 @@ class Donation(models.Model):
     pick_up_time = models.TimeField(null=True)
     pick_up_comment = models.TextField()
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, default=None)
+
+class DonationModelForm(ModelForm):
+    class Meta:
+        model = Donation
+        fields = ['quantity', 'address', 'phone_number', 'city', 'zip_code', 'pick_up_date', 'pick_up_time', 'pick_up_comment']
