@@ -21,6 +21,24 @@
             </div>
         </div>
     </header>
-
-
+    <section class="form--steps">
+        <div class="form--steps-container">
+        <div class="summary">
+            {% if donations %}
+            {% for donation in donations %}
+                    <div class="form-section">
+                        <h4>Oddajesz:</h4>
+                        <ul>
+                            <li>{{donation.quantity}}</li>
+                            <li>{{donation.institution}}</li>
+                            <li>{{donation.categories}}</li>
+                            <li>{{donation.pick_up_date}} {{donation.pick_up_time}}</li>
+                        </ul>
+                    </div>
+                    {% endfor %}
+            {% endif %}
+        </div>
+        </div>
+        </div>
+    </section>
 {% endblock %}

@@ -3,16 +3,13 @@ from django.views import View
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout
 from .models import Category, Donation, Institution, CustomUser, DonationModelForm
-from .forms import DonationForm
-
 
 
 class LandingPageView(View):
     def get(self, request):
-        quantity_counter = sum(
-            [Donation.objects.values_list()[i][1] for i in range(len(Donation.objects.values_list()))]
-        )
-        institution_counter = len(Institution.objects.all())
+        quantity_counter = sum(Donation.objects.values_list('quantity', flat=True))
+
+        institution_counter = len(Donation.objects.values_list('institution', flat=True).distinct())
 
         foundations = Institution.objects.filter(type=1)
         organizations = Institution.objects.filter(type=2)
@@ -55,18 +52,21 @@ class AddDonationView(View):
             return redirect("/login")
         categories = Category.objects.all()
         institutions = Institution.objects.all()
-        return render(request, "form.html", context={"categories": categories, "institutions": institutions, form:"form"})
+        return render(request, "form.html",
+                      context={"categories": categories, "institutions": institutions, form: "form"})
 
     def post(self, request):
         form = DonationModelForm(request.POST)
-        categories = Category.objects.get(name=request.POST['categories'])
+        categories = request.POST['categories'].split(",")
         institution = Institution.objects.get(pk=request.POST['institution'])
         user = request.user
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = user
             instance.save()
-            instance.categories.add(categories)
+            for category in categories:
+                instance.categories.add(Category.objects.get(name=category))
+                instance.save()
             instance.institution = institution
             instance.save()
             return render(request, 'form-confirmation.html')
@@ -109,7 +109,9 @@ class RegisterView(View):
 
 class ProfileView(View):
     def get(self, request):
-        return render(request, "user_profile.html")
+        user = request.user
+        donations = Donation.objects.filter(user_id = user.pk)
+        return render(request, "user_profile.html", context={'donations':donations})
 
 
 class FormConfirmationView(View):

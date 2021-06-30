@@ -70,8 +70,8 @@ class Institution(models.Model):
     type = models.IntegerField(choices=TYPE_CHOICES, default=4)
     categories = models.ManyToManyField(Category)
 
-    # def __str__(self):
-    #     return f"Nazwa instytucji: {self.name}, opis: {self.description}"
+    def __str__(self):
+        return self.name
 
 
 class Donation(models.Model):

@@ -235,7 +235,11 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$step.parentElement.hidden = this.currentStep >= 6;
 
       // TODO: get data from inputs and show them in summary
-      this.$categories = document.querySelectorAll('input[name="categories"]:checked')[0].value;
+      this.$categories = document.querySelectorAll('input[name="categories"]:checked');
+      this.$categoriesList = [];
+      for (let i = 0; i<this.$categories.length; i++){
+        this.$categoriesList.push(this.$categories[i].value);
+      }
       this.$quantity = document.querySelector('input[name="quantity"]').value;
       this.$institution = document.querySelector('input[name="institution"]:checked').value;
       this.$address = document.querySelector('input[name="address"]').value;
@@ -270,13 +274,12 @@ document.addEventListener("DOMContentLoaded", function() {
       this.updateForm();
 
       this.$formData = new FormData();
-      this.$formData.append('categories', this.$categories);
+      this.$formData.append('categories', this.$categoriesList);
       this.$formData.append('quantity', this.$quantity);
       this.$formData.append('institution', this.$institution);
       this.$formData.append('address', this.$address);
       this.$formData.append('city', this.$city);
       this.$formData.append('zip_code', this.$zip_code);
-      this.$formData.append('address', this.$address);
       this.$formData.append('phone_number', this.$phone_number);
       this.$formData.append('pick_up_date', this.$pick_up_date);
       this.$formData.append('pick_up_time', this.$pick_up_time);
