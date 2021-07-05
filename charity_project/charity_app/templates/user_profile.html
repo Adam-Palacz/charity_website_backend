@@ -1,44 +1,53 @@
 {% extends 'base.html' %}
 
 
-    {% block header %}
-    <header>
-      {% endblock %}
-      {% block body %}
-        <ul>
-          <li><a href="{% url 'index' %}" class="btn btn--without-border active">Start</a></li>
-          <li><a href="{% url 'index' %}#steps" class="btn btn--without-border">O co chodzi?</a></li>
-          <li><a href="{% url 'index' %}#about-us" class="btn btn--without-border">O nas</a></li>
-          <li><a href="{% url 'index' %}#help" class="btn btn--without-border">Fundacje i organizacje</a></li>
-          <li><a href="{% url 'index' %}#contact" class="btn btn--without-border">Kontakt</a></li>
-        </ul>
-      </nav>
-        <div class="slogan container container--90">
-            <div class="slogan--item">
-                <h1>Imie: {{user.first_name}}</h1>
-                <h1>Nazwisko: {{user.last_name}}</h1>
-                <h1>email {{user.email}}</h1>
-            </div>
+{% block header %}
+<header>
+    {% endblock %}
+    {% block body %}
+    <ul>
+        <li><a href="{% url 'index' %}" class="btn btn--without-border active">Start</a></li>
+        <li><a href="{% url 'index' %}#steps" class="btn btn--without-border">O co chodzi?</a></li>
+        <li><a href="{% url 'index' %}#about-us" class="btn btn--without-border">O nas</a></li>
+        <li><a href="{% url 'index' %}#help" class="btn btn--without-border">Fundacje i organizacje</a></li>
+        <li><a href="{% url 'form' %}" class="btn btn--without-border" name="form">Przekaż dary</a></li>
+        <li><a href="{% url 'index' %}#contact" class="btn btn--without-border">Kontakt</a></li>
+    </ul>
+    </nav>
+    <div class="slogan container container--90">
+        <div class="slogan--item">
+            <h1>Imie: {{user.first_name}}</h1>
+            <h1>Nazwisko: {{user.last_name}}</h1>
+            <h1>email {{user.email}}</h1>
         </div>
-    </header>
-    <section class="form--steps">
-        <div class="form--steps-container">
-        <div class="summary">
+    </div>
+</header>
+<section>
             {% if donations %}
             {% for donation in donations %}
-                    <div class="form-section">
-                        <h4>Oddajesz:</h4>
-                        <ul>
-                            <li>{{donation.quantity}}</li>
-                            <li>{{donation.institution}}</li>
-                            <li>{{donation.categories}}</li>
-                            <li>{{donation.pick_up_date}} {{donation.pick_up_time}}</li>
-                        </ul>
-                    </div>
+            <div class="slogan--item">
+                <h4>Oddajesz:</h4>
+                <ul>
+                    <li>Ilość worków: {{donation.quantity}}</li>
+                    <li>Dla: {{donation.institution}}</li>
+                    <li>Kategorie:
+                    {% for category in donation.categories.all %}
+                    {{category}}
                     {% endfor %}
+                    </li>
+                    <li>Data przekazania: {{donation.pick_up_date}} {{donation.pick_up_time}}</li>
+                </ul>
+                <form method="post">
+                    {% csrf_token %}
+                    <input hidden name=pk_donation value="{{donation.pk}}"/>
+                    <input type="checkbox" name="is_taken"
+                           {% if donation.is_taken %} checked {% endif %}
+                    />Dar został odebrany
+                    <input type="submit" value="Potwierdź">
+                </form>
+            </div>
+
+            {% endfor %}
             {% endif %}
-        </div>
-        </div>
-        </div>
-    </section>
+</section>
 {% endblock %}

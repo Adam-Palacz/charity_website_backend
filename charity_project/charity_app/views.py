@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout
-from .models import Category, Donation, Institution, CustomUser, DonationModelForm
+from .models import Category, Donation, Institution, CustomUser, DonationModelForm, CustomUserForm
 
 
 class LandingPageView(View):
@@ -70,6 +70,7 @@ class AddDonationView(View):
             instance.institution = institution
             instance.save()
             return render(request, 'form-confirmation.html')
+        return render(request, 'form.html')
 
 
 class LoginView(View):
@@ -110,10 +111,38 @@ class RegisterView(View):
 class ProfileView(View):
     def get(self, request):
         user = request.user
-        donations = Donation.objects.filter(user_id = user.pk)
-        return render(request, "user_profile.html", context={'donations':donations})
+        donations = Donation.objects.filter(user_id=user.pk)
+        return render(request, "user_profile.html", context={'donations': donations})
+
+    def post(self, request):
+        pk_donation = int(request.POST.get('pk_donation'))
+        is_taken = request.POST.get('is_taken')
+        donation = Donation.objects.get(pk=pk_donation)
+        if is_taken:
+            donation.is_taken =True
+            donation.save()
+        else:
+            donation.is_taken = False
+            donation.save()
+        return redirect("/profile/")
 
 
 class FormConfirmationView(View):
     def get(self, request):
         return render(request, 'form-confirmation.html')
+
+
+class EditProfileView(View):
+    def get(self, request):
+        return render(request, 'edit_profile.html')
+
+    # def post(self,request):
+    #     form = CustomUserForm(request.POST)
+    #     user = request.user
+    #     user_model = CustomUser.objects.get(pk=user.pk)
+    #     passoword = request.POST.get('password')
+    #     passoword2 = request.POST.get('password2')
+    #     instance = form.save(commit=False)
+    #     if passoword != passoword2:
+    #         instance.password = passoword
+    #     instance

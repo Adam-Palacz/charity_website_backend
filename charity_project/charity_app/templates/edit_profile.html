@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+
+{% block header %}
+<header>
+    {% endblock %}
+    {% block body %}
+    <ul>
+        <li><a href="{% url 'index' %}" class="btn btn--without-border active">Start</a></li>
+        <li><a href="{% url 'index' %}#steps" class="btn btn--without-border">O co chodzi?</a></li>
+        <li><a href="{% url 'index' %}#about-us" class="btn btn--without-border">O nas</a></li>
+        <li><a href="{% url 'index' %}#help" class="btn btn--without-border">Fundacje i organizacje</a></li>
+        <li><a href="{% url 'form' %}" class="btn btn--without-border" name="form">Przekaż dary</a></li>
+        <li><a href="{% url 'index' %}#contact" class="btn btn--without-border">Kontakt</a></li>
+    </ul>
+    </nav>
+    <div >
+        <form method="post" style="margin-left:50%; font-size:20px;">
+            {% csrf_token %}
+            <ul>
+                <li>Zmień imie:<br>
+                    <input name="first_name" type="text" value="{{user.first_name}}">
+                </li>
+                <li>Zmień nazwisko:<br>
+                    <input name="last_name" type="text" value="{{user.last_name}}">
+                </li>
+                <li>Zmień email:<br>
+                    <input name="email" type="email" value="{{user.email}}">
+                </li>
+                <li>Zmień hasło:<br>
+                    <input name="password" type="password">
+                </li>
+                <li>Powtórz hasło<br>
+                    <input name="password2" type="password">
+                </li>
+                    <input type="submit" value="Zatwierdź zmiany">
+            </ul>
+
+        </form>
+    </div>
+</header>
+{% endblock %}

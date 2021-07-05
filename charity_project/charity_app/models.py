@@ -86,8 +86,17 @@ class Donation(models.Model):
     pick_up_time = models.TimeField(null=True)
     pick_up_comment = models.TextField()
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, default=None)
+    is_taken = models.BooleanField(default=False)
+
 
 class DonationModelForm(ModelForm):
     class Meta:
         model = Donation
-        fields = ['quantity', 'address', 'phone_number', 'city', 'zip_code', 'pick_up_date', 'pick_up_time', 'pick_up_comment']
+        fields = ['quantity', 'address', 'phone_number', 'city', 'zip_code', 'pick_up_date', 'pick_up_time',
+                  'pick_up_comment']
+
+
+class CustomUserForm(ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = '__all__'
