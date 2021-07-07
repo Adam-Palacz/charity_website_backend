@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.base_user import BaseUserManager
-from django.forms import ModelForm
+from django.forms import ModelForm, CharField
+from django.core.exceptions import ValidationError
 
 
 class CustomUserManager(BaseUserManager):
@@ -97,6 +98,13 @@ class DonationModelForm(ModelForm):
 
 
 class CustomUserForm(ModelForm):
+    password2 = CharField()
     class Meta:
         model = CustomUser
-        fields = '__all__'
+        fields = ['first_name', 'last_name', 'email', 'password', 'password2']
+    def clean(self):
+        cd = super().clean()
+        password = cd['password']
+        password2 = cd['password2']
+        if password != password2:
+            raise ValidationError('Hasło jest różne')

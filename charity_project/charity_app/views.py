@@ -94,19 +94,14 @@ class RegisterView(View):
 
     def post(self, request):
         form = CustomUserForm(request.POST)
-        password = form.data['password']
-        password2 = form.data['password2']
-        if password != password2:
-            return redirect('/register/')
-        else:
-            email = form.data['email']
-            name = form.data['name']
-            surname = form.data['surname']
-            user = CustomUser.objects.create_user(email=email, password=password)
-            user.first_name = name
-            user.last_name = surname
-            user.save()
+        if form.is_valid():
+            password = form.cleaned_data['password']
+            email = form.cleaned_data['email']
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            CustomUser.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name)
             return redirect('/login/')
+        return render(request, "register.html", context={"form": form})
 
 
 class ProfileView(View):

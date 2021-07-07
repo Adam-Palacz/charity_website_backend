@@ -19,19 +19,20 @@
       <form method="post">
         {% csrf_token %}
         <div class="form-group">
-          <input type="text" name="name" placeholder="Imię" />
+          <input type="text" name="fist_name" placeholder="Imię" />{{form.first_name.errors}}
         </div>
          <div class="form-group">
-          <input type="text" name="surname" placeholder="Nazwisko" />
+          <input type="text" name="last_name" placeholder="Nazwisko" />{{form.last_name.errors}}
         </div>
         <div class="form-group">
-          <input type="email" name="email" placeholder="Email" />
+          <input type="email" name="email" placeholder="Email" />{{form.email.errors}}
         </div>
         <div class="form-group">
-          <input type="password" name="password" placeholder="Hasło" />
+          <input type="password" name="password" placeholder="Hasło" />{{form.password.errors}}
         </div>
         <div class="form-group">
-          <input type="password" name="password2" placeholder="Powtórz hasło" />
+          <input type="password" name="password2" placeholder="Powtórz hasło" />{{form.password2.errors}}
+            {{form.non_field_errors}}
         </div>
 
         <div class="form-group form-group--buttons">
