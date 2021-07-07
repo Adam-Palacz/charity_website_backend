@@ -83,7 +83,7 @@ class LoginView(View):
         user = authenticate(email=email, password=password)
         if user is not None:
             login(request, user)
-            return render(request, "index.html")
+            return redirect('/')
         return render(request, "register.html")
 
 
@@ -93,14 +93,15 @@ class RegisterView(View):
         return render(request, "register.html")
 
     def post(self, request):
-        name = request.POST.get("name")
-        surname = request.POST.get("surname")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        password2 = request.POST.get("password2")
+        form = CustomUserForm(request.POST)
+        password = form.data['password']
+        password2 = form.data['password2']
         if password != password2:
             return render(request, "register.html")
         else:
+            email = form.data['email']
+            name = form.data['name']
+            surname = form.data['surname']
             user = CustomUser.objects.create_user(email=email, password=password)
             user.first_name = name
             user.last_name = surname
@@ -112,14 +113,15 @@ class ProfileView(View):
     def get(self, request):
         user = request.user
         donations = Donation.objects.filter(user_id=user.pk)
-        return render(request, "user_profile.html", context={'donations': donations})
+        sorted_donations = donations.order_by('is_taken', '-pick_up_date', '-pick_up_time')
+        return render(request, "user_profile.html", context={'donations': sorted_donations})
 
     def post(self, request):
         pk_donation = int(request.POST.get('pk_donation'))
         is_taken = request.POST.get('is_taken')
         donation = Donation.objects.get(pk=pk_donation)
         if is_taken:
-            donation.is_taken =True
+            donation.is_taken = True
             donation.save()
         else:
             donation.is_taken = False
@@ -136,13 +138,26 @@ class EditProfileView(View):
     def get(self, request):
         return render(request, 'edit_profile.html')
 
-    # def post(self,request):
-    #     form = CustomUserForm(request.POST)
-    #     user = request.user
-    #     user_model = CustomUser.objects.get(pk=user.pk)
-    #     passoword = request.POST.get('password')
-    #     passoword2 = request.POST.get('password2')
-    #     instance = form.save(commit=False)
-    #     if passoword != passoword2:
-    #         instance.password = passoword
-    #     instance
+    def post(self, request):
+        form = CustomUserForm(request.POST)
+        user = request.user
+        password = form.data['password']
+        password2 = form.data['password2']
+        if password == password2:
+            user.set_password(password)
+            user.save()
+            return render(request, 'edit_profile.html')
+        return redirect('/form/')
+
+
+class PasswordAuthorizationView(View):
+    def get(self, request):
+        return render(request, 'authorization.html')
+
+    def post(self, request):
+        user = request.user
+        password = request.POST.get('password')
+        user_test = authenticate(email=user.email, password=password)
+        if user_test is not None:
+            return redirect('/edit-profile/')
+        return render(request, 'authorization.html')

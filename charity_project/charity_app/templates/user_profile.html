@@ -25,7 +25,11 @@
 <section>
             {% if donations %}
             {% for donation in donations %}
+            {% if donation.is_taken %}
+            <div class="slogan--item" style="color:grey">
+            {% else %}
             <div class="slogan--item">
+                {% endif %}
                 <h4>Oddajesz:</h4>
                 <ul>
                     <li>Ilość worków: {{donation.quantity}}</li>

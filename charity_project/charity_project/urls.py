@@ -27,4 +27,5 @@ urlpatterns = [
     path('profile/', ProfileView.as_view(), name='profile'),
     path('edit-profile/', EditProfileView.as_view(), name='edit-profile'),
     path('form/confirmation/', FormConfirmationView.as_view(), name='form-confirmation'),
+    path('authorization/', PasswordAuthorizationView.as_view(), name='authorization'),
 ]
