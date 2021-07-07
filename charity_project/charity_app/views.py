@@ -35,7 +35,7 @@ class LandingPageView(View):
         logout_button = request.POST.get('logout')
         if logout_button:
             logout(request)
-            return render(request, "index.html")
+            return redirect('/')
 
 
 class LogoutView(View):
@@ -70,7 +70,7 @@ class AddDonationView(View):
             instance.institution = institution
             instance.save()
             return render(request, 'form-confirmation.html')
-        return render(request, 'form.html')
+        return redirect('/form/')
 
 
 class LoginView(View):
@@ -84,7 +84,7 @@ class LoginView(View):
         if user is not None:
             login(request, user)
             return redirect('/')
-        return render(request, "register.html")
+        return redirect('/register/')
 
 
 class RegisterView(View):
@@ -97,7 +97,7 @@ class RegisterView(View):
         password = form.data['password']
         password2 = form.data['password2']
         if password != password2:
-            return render(request, "register.html")
+            return redirect('/register/')
         else:
             email = form.data['email']
             name = form.data['name']
@@ -106,7 +106,7 @@ class RegisterView(View):
             user.first_name = name
             user.last_name = surname
             user.save()
-            return render(request, "login.html")
+            return redirect('/login/')
 
 
 class ProfileView(View):
@@ -143,11 +143,18 @@ class EditProfileView(View):
         user = request.user
         password = form.data['password']
         password2 = form.data['password2']
-        if password == password2:
+        email = form.data['email']
+        first_name = form.data['first_name']
+        last_name = form.data['last_name']
+        user.email = email
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
+        if password != '' and password == password2:
             user.set_password(password)
             user.save()
-            return render(request, 'edit_profile.html')
-        return redirect('/form/')
+            return redirect('/login/')
+        return redirect('/edit-profile/')
 
 
 class PasswordAuthorizationView(View):
@@ -160,4 +167,4 @@ class PasswordAuthorizationView(View):
         user_test = authenticate(email=user.email, password=password)
         if user_test is not None:
             return redirect('/edit-profile/')
-        return render(request, 'authorization.html')
+        return redirect('/authorization/')
